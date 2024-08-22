@@ -8,13 +8,19 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/v1")
+@RequestMapping("/api/v1/user")
 public class UserController {
     @Autowired
     private UserService userService;
 
+    @GetMapping("/{userId}")
+    public ResponseEntity<User> getUser(@PathVariable(name = "userId") Long userId) {
+        User user = userService.getUserById(userId);
+        return ResponseEntity.status(HttpStatus.OK).body(user);
+    }
 
-    @PostMapping("/user")
+
+    @PostMapping("/add")
     public ResponseEntity<User> createUser(@RequestBody User user) {
         User createdUser =  userService.createUser(user.getUsername(), user.getEmail());
         return ResponseEntity.status(HttpStatus.CREATED).body(createdUser);
