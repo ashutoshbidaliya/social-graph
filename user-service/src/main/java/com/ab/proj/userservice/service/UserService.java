@@ -10,6 +10,10 @@ public class UserService {
     @Autowired
     private UserRepository repository;
 
+    public User getUserById(Long userId) {
+        return repository.findById(userId).orElseThrow();
+    }
+
     public User createUser(String userName, String email) {
         User user = new User();
         user.setUsername(userName);
