@@ -7,16 +7,25 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/v1/user")
 public class UserController {
     @Autowired
     private UserService userService;
 
-    @GetMapping("/{userId}")
-    public ResponseEntity<User> getUser(@PathVariable(name = "userId") Long userId) {
-        User user = userService.getUserById(userId);
-        return ResponseEntity.status(HttpStatus.OK).body(user);
+    /*@GetMapping
+    public ResponseEntity<UserDto> getUser(@RequestParam(name = "user")  String userName) {
+        UserDto userDto = userService.getUserByName(userName);
+
+
+        return ResponseEntity.status(HttpStatus.OK).body(userDto);
+    }*/
+
+    @GetMapping
+    public List<User> getFirstLevelFriendsByUsername(@RequestParam(name = "user")  String userName) {
+        return userService.getFirstLevelFriendsByUsername(userName);
     }
 
 
