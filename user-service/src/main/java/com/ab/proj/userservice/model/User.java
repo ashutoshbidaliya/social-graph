@@ -24,11 +24,11 @@ public class User {
 
     private String username;
     private String email;
+    private String password;
 
     @Relationship(type = "FRIENDS_WITH", direction = Relationship.Direction.OUTGOING)
     private Set<User> friends = new HashSet<>();
 
-    // Getters and setters
 }
 
 
