@@ -28,10 +28,15 @@ public class UserController {
         return userService.getFirstLevelFriendsByUsername(userName);
     }
 
+    @GetMapping("/email")
+    public User getUserByEmail(@RequestParam(name = "email")  String email) {
+        return userService.getUserByEmail(email);
+    }
+
 
     @PostMapping("/add")
     public ResponseEntity<User> createUser(@RequestBody User user) {
-        User createdUser =  userService.createUser(user.getUsername(), user.getEmail());
+        User createdUser =  userService.createUser(user.getUsername(), user.getEmail(), user.getPassword());
         return ResponseEntity.status(HttpStatus.CREATED).body(createdUser);
     }
 

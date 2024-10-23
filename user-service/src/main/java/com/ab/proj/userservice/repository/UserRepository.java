@@ -12,6 +12,8 @@ public interface UserRepository extends Neo4jRepository<User, Long> {
 
     Optional<User> findByUsername(String username);
 
+    User findByEmail(String email);
+
     //@Query("MATCH (u:User {username: $username})-[:FRIENDS_WITH*1]-(f:User) RETURN u AS user, collect(f) AS friends")
     //@Query("MATCH (u:User)-[:FRIENDS_WITH]->(f:User) WHERE u.username = $username RETURN u, collect(f) AS friends")
 
@@ -26,6 +28,5 @@ public interface UserRepository extends Neo4jRepository<User, Long> {
 
     @Query("MATCH (u:User)-[:FRIENDS_WITH]->(f:User) WHERE u.username = $username RETURN f")
     List<User> findFirstLevelFriendsByUsername(String username);
-
 }
 

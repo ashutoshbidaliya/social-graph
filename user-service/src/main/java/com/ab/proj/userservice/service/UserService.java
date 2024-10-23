@@ -6,6 +6,7 @@ import com.ab.proj.userservice.model.User;
 import com.ab.proj.userservice.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -18,9 +19,16 @@ public class UserService {
     @Autowired
     private UserRepository repository;
 
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
     @Transactional
     public List<User> getFirstLevelFriendsByUsername(String username) {
         return repository.findFirstLevelFriendsByUsername(username);
+    }
+
+    public User getUserByEmail(String email) {
+        return repository.findByEmail(email);
     }
 
     @Transactional
@@ -45,14 +53,14 @@ public class UserService {
 
         userDto.setFriends(friends);
         return userDto;
-
-
     }
 
-    public User createUser(String userName, String email) {
+    public User createUser(String userName, String email, String password) {
         User user = new User();
         user.setUsername(userName);
         user.setEmail(email);
+        String encodedPassword = passwordEncoder.encode(password);
+        user.setPassword(encodedPassword);
         //user.setFriends();
         return repository.save(user);
     }
