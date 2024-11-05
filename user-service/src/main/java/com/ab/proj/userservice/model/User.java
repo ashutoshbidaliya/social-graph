@@ -1,13 +1,7 @@
 package com.ab.proj.userservice.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import org.springframework.data.neo4j.core.schema.GeneratedValue;
-import org.springframework.data.neo4j.core.schema.Id;
-import org.springframework.data.neo4j.core.schema.Node;
-import org.springframework.data.neo4j.core.schema.Relationship;
+import jakarta.persistence.*;
+import lombok.*;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -16,17 +10,27 @@ import java.util.Set;
 @NoArgsConstructor
 @Builder
 @Data
-@Node("User")
+@EqualsAndHashCode(exclude = "friends")
+@Entity
+@Table(name ="Users")
+
 public class User {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private String username;
     private String email;
     private String password;
 
-    @Relationship(type = "FRIENDS_WITH", direction = Relationship.Direction.OUTGOING)
+    //@Relationship(type = "FRIENDS_WITH", direction = Relationship.Direction.OUTGOING)
+    @ManyToMany
+    @JoinTable(
+            name = "user_friends",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "friend_id")
+    )
+    @ToString.Exclude
     private Set<User> friends = new HashSet<>();
 
 }

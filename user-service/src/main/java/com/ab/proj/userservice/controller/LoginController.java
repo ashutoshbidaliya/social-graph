@@ -18,9 +18,14 @@ public class LoginController {
     @Autowired
     UserService userService;
 
-    @GetMapping("/signin")
+    /*@PostMapping("/signin")
     public User longin(@RequestParam(name = "email")String email, @RequestParam(name = "password")String password) {
         return loginService.login(email, password);
+    }*/
+
+    @PostMapping("/signin")
+    public User longin(@RequestBody User user) {
+        return loginService.login(user.getEmail(), user.getPassword()).orElseThrow();
     }
 
     @PostMapping("/signup")

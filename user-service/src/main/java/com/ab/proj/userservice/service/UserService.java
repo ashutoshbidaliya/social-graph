@@ -1,7 +1,5 @@
 package com.ab.proj.userservice.service;
 
-import com.ab.proj.userservice.dto.FriendDto;
-import com.ab.proj.userservice.dto.UserDto;
 import com.ab.proj.userservice.model.User;
 import com.ab.proj.userservice.repository.UserRepository;
 import jakarta.transaction.Transactional;
@@ -11,8 +9,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Objects;
-import java.util.Set;
-import java.util.stream.Collectors;
+import java.util.Optional;
 
 @Service
 public class UserService {
@@ -27,32 +24,22 @@ public class UserService {
         return repository.findFirstLevelFriendsByUsername(username);
     }
 
-    public User getUserByEmail(String email) {
+    public Optional<User> getUserByEmail(String email) {
         return repository.findByEmail(email);
     }
 
-    @Transactional
-    public UserDto getUserByName(String userName) {
-        List<UserDto> results = repository.findUserWithFriendsByUserName(userName);
+    public List<User> getAllUserByEmail(String email) {
+        return repository.findAllByEmail(email);
+    }
 
-        if (results.isEmpty()) {
-            return null;
-        }
-        UserDto userDto = results.get(0);
-        //Set<FriendDto> friends = new HashSet<>();
+    public List<Long> deleteUsers(String email) {
+        List<User> users = repository.findAllByEmail(email);
+        List<Long> ids = users.stream().filter(Objects::nonNull).map(User::getId)
+                .toList();
 
-        Set<FriendDto> friends = userDto.getFriends().stream()
-                .filter(Objects::nonNull)
-                .map(friend -> {
-                    return FriendDto.builder()
-                            //.id(friend.getId())
-                            .username(friend.getUsername())
-                            .email(friend.getEmail()).build();
-                }).collect(Collectors.toSet());
+        repository.deleteAllById(ids);
+        return ids;
 
-
-        userDto.setFriends(friends);
-        return userDto;
     }
 
     public User createUser(String userName, String email, String password) {

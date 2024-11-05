@@ -6,6 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
 public class LoginService {
     @Autowired
@@ -14,11 +16,8 @@ public class LoginService {
     @Autowired
     PasswordEncoder passwordEncoder;
 
-    public User login(String email, String password) {
-        User user = userRepo.findByEmail(email);
-        if(user != null) {
-            return passwordEncoder.matches(password, user.getPassword()) ? user : null;
-        }
-        return null;
+    public Optional<User> login(String email, String password) {
+        return userRepo.findByEmail(email)
+                .filter(user -> passwordEncoder.matches(password, user.getPassword()));
     }
 }

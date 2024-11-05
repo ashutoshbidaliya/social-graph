@@ -23,7 +23,7 @@ public class PostController {
     /**
      * This method is used to create a new post
      */
-    @PostMapping
+    @PostMapping("/create")
     public ResponseEntity<Post> createPost(@RequestBody Post post) {
         Post createdPost = postService.savePost(post);
         return new ResponseEntity<>(createdPost, HttpStatus.CREATED);

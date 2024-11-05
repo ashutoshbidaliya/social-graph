@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/v1/user")
@@ -29,20 +30,37 @@ public class UserController {
     }
 
     @GetMapping("/email")
-    public User getUserByEmail(@RequestParam(name = "email")  String email) {
-        return userService.getUserByEmail(email);
+    public ResponseEntity<User> getUserByEmail(@RequestParam(name = "email")  String email) {
+        return userService.getUserByEmail(email)
+                .map(user -> ResponseEntity.status(HttpStatus.OK).body(user))
+                .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).build());
     }
-
 
     @PostMapping("/add")
     public ResponseEntity<User> createUser(@RequestBody User user) {
-        User createdUser =  userService.createUser(user.getUsername(), user.getEmail(), user.getPassword());
-        return ResponseEntity.status(HttpStatus.CREATED).body(createdUser);
+        return userService.getUserByEmail(user.getEmail())
+                .map(existingUser -> ResponseEntity.status(HttpStatus.CONFLICT).body(existingUser))
+                .orElseGet(() -> {
+                    User createdUser = userService.createUser(user.getUsername(), user.getEmail(), user.getPassword());
+                    return ResponseEntity.status(HttpStatus.CREATED).body(createdUser);
+                });
+
     }
 
     @PostMapping("/friend")
     public void addFriend(@RequestParam(name = "userId") Long userId,
                           @RequestParam (name="friendId")Long friendId) {
         userService.addFriend(userId, friendId);
+    }
+
+    @GetMapping("/all")
+    public List<User> getAllUserByEmail(@RequestParam(name = "email")  String email) {
+        return userService.getAllUserByEmail(email);
+    }
+
+    @DeleteMapping("/email")
+    public ResponseEntity<List<Long>> deleteUsersByEmail(@RequestParam(name="email") String email) {
+        List<Long> ids = userService.deleteUsers(email);
+        return ResponseEntity.status(HttpStatus.OK).body(ids);
     }
 }
